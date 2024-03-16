@@ -1,0 +1,64 @@
+.filters-group-container {
+  margin-top: 16px;
+  width: 50%;
+}
+
+@media screen and (min-width: 768px) {
+  .filters-group-container {
+    width: 30%;
+    max-width: 350px;
+    margin-top: 20px;
+    flex-shrink: 0;
+    padding: 1%;
+    padding-top: 0px;
+    font-size: 70%;
+    font-family: 'roboto';
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+/* Write your CSS here */
+
+.category_sub_heading {
+  color: #64748b;
+  font-weight: 530;
+  margin: 10px;
+  margin-left: 0px;
+  font-size: 150%;
+  background-color: transparent;
+  text-align: left;
+  border: none;
+}
+
+.clear_filter_btn {
+  margin-top: 20px;
+  height: 30px;
+  width: 50%;
+  border: 2px solid #0967d2;
+  border-radius: 10px;
+  color: #0967d2;
+  background-color: transparent;
+  font-weight: 700;
+  font-size: 130%;
+}
+
+.btn_star {
+  background-color: transparent;
+  color: #64748b;
+  font-size: 180%;
+  display: flex;
+  align-items: center;
+  padding: 0px;
+  height: 40px;
+  border: none;
+}
+
+.star_img {
+  width: 60%;
+  margin-right: 5px;
+}
+
+.clicked_style {
+  color: #0967d2;
+}
