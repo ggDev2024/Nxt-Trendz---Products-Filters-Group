@@ -9,8 +9,8 @@ const FiltersGroup = props => {
     clearRatingCategory,
   } = props
 
-  const onClickCat = event => {
-    updateCategory(event.target.value)
+  const onClickCat = catID => {
+    updateCategory(catID)
   }
 
   const onClickRat = ratID => {
@@ -26,7 +26,7 @@ const FiltersGroup = props => {
       <h1>Category</h1>
       {categoryList.map(eachCat => (
         <button
-          onClick={onClickCat}
+          onClick={() => onClickCat(eachCat.categoryId)}
           type="button"
           className={`category_sub_heading ${
             eachCat.displayStyle ? 'clicked_style' : ''

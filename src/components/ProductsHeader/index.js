@@ -22,7 +22,7 @@ const ProductsHeader = props => {
     }
   }
 
-  const {sortbyOptions, activeOptionId} = props
+  const {sortbyOptions, activeOptionId, searchUserInput} = props
 
   return (
     <div className="products-header">
@@ -30,6 +30,7 @@ const ProductsHeader = props => {
         <input
           onKeyDown={onEnterSearchInput}
           onChange={onChangeUserInput}
+          value={searchUserInput}
           className="search_input"
           placeholder="search"
           type="search"

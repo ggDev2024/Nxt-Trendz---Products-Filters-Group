@@ -73,7 +73,7 @@ const ratingsList = [
 class AllProductsSection extends Component {
   state = {
     productsList: [],
-    isLoading: false,
+    apiStatus: '',
     activeOptionId: sortbyOptions[0].optionId,
     categoryList: categoryOptions,
     searchUserInput: '',
@@ -88,7 +88,7 @@ class AllProductsSection extends Component {
 
   getProducts = async () => {
     this.setState({
-      isLoading: true,
+      apiStatus: 'isLoading',
     })
     const jwtToken = Cookies.get('jwt_token')
 
@@ -101,9 +101,10 @@ class AllProductsSection extends Component {
       searchUserInput,
     } = this.state
 
-    let apiUrl = `https://apis.ccbp.in/products?sort_by=${activeOptionId}&category=${selectedCategory}&rating=${selectedRating}&title_search=${searchUserInput}`
+    const apiUrl = `https://apis.ccbp.in/products?sort_by=${activeOptionId}&category=${selectedCategory}&rating=${selectedRating}&title_search=${searchUserInput}`
 
-    if (selectedCategory) {
+    console.log(apiUrl)
+    /*   if (selectedCategory) {
       apiUrl += `&category=${selectedCategory}`
     }
 
@@ -111,7 +112,7 @@ class AllProductsSection extends Component {
       apiUrl += `&rating=${selectedRating}`
     }
 
-    /*    if (selectedRating && selectedCategory && searchUserInput) {
+       if (selectedRating && selectedCategory && searchUserInput) {
       apiUrl += `&title_search=${searchUserInput.toLowerCase()}`
     }  */
 
@@ -134,8 +135,10 @@ class AllProductsSection extends Component {
       }))
       this.setState({
         productsList: updatedData,
-        isLoading: false,
+        apiStatus: 'success',
       })
+    } else {
+      this.setState({apiStatus: 'failed'})
     }
   }
 
@@ -159,7 +162,24 @@ class AllProductsSection extends Component {
   }
 
   clearRatingCategory = () => {
-    this.setState({selectedRating: '', selectedCategory: ''}, this.getProducts)
+    const {categoryList} = this.state
+
+    const updatedCategoryList = categoryList.map(each => ({
+      ...each,
+      displayStyle: false,
+    }))
+
+    console.log(updatedCategoryList)
+
+    this.setState(
+      {
+        selectedRating: '',
+        selectedCategory: '',
+        searchUserInput: '',
+        categoryList: updatedCategoryList,
+      },
+      this.getProducts,
+    )
   }
 
   changeSortby = activeOptionId => {
@@ -167,16 +187,16 @@ class AllProductsSection extends Component {
   }
 
   changeSearch = enterSearch => {
-    this.setState({searchUserInput: enterSearch}, this.getProducts)
+    this.setState({searchUserInput: enterSearch})
   }
 
   enterSearchInput = () => {
     this.getProducts()
   }
 
-  renderProduct = filteredSearch =>
-    filteredSearch.map(product => (
-      <ProductCard productData={product} key={product.id} />
+  renderProduct = productsList =>
+    productsList.map(eachProduct => (
+      <ProductCard productData={eachProduct} key={eachProduct.id} />
     ))
 
   renderNoProduct = () => (
@@ -187,7 +207,7 @@ class AllProductsSection extends Component {
         alt="no products"
       />
       <h1>No Products Found</h1>
-      <p>We Could not find any products. Try other filters</p>
+      <p>We Could not find any products. Try other filters.</p>
     </div>
   )
 
@@ -199,12 +219,12 @@ class AllProductsSection extends Component {
       searchUserInput,
       disRatingsList,
     } = this.state
-    const filteredSearch = productsList.filter(eachProduct =>
-      eachProduct.title.toLowerCase().includes(searchUserInput.toLowerCase()),
-    )
 
-    console.log(filteredSearch)
-    const noMatchProduct = filteredSearch.length === 0
+    /*  const filteredSearch = productsList.filter(eachProduct =>
+      eachProduct.title.toLowerCase().includes(searchUserInput.toLowerCase()),
+    )  */
+
+    const noMatchProduct = productsList.length === 0
 
     // TODO: Add No Products View
     return (
@@ -215,6 +235,7 @@ class AllProductsSection extends Component {
           changeSortby={this.changeSortby}
           changeSearch={this.changeSearch}
           enterSearchInput={this.enterSearchInput}
+          searchUserInput={searchUserInput}
         />
         <div className="product_display_section">
           <FiltersGroup
@@ -227,7 +248,7 @@ class AllProductsSection extends Component {
           <ul className="products-list">
             {noMatchProduct
               ? this.renderNoProduct()
-              : this.renderProduct(filteredSearch)}
+              : this.renderProduct(productsList)}
           </ul>
         </div>
       </div>
@@ -241,15 +262,44 @@ class AllProductsSection extends Component {
   )
 
   // TODO: Add failure view
+  renderFailureView = () => (
+    <div className="products-error-view-container">
+      <img
+        src="https://assets.ccbp.in/frontend/react-js/nxt-trendz/nxt-trendz-products-error-view.png"
+        alt="products failure"
+        className="products-failure-img"
+      />
+      <h1 className="product-failure-heading-text">
+        Oops! Something Went Wrong
+      </h1>
+      <p className="products-failure-description">
+        We are having some trouble processing your request. Please try again.
+      </p>
+    </div>
+  )
 
   render() {
-    const {isLoading} = this.state
+    const {apiStatus} = this.state
+
+    let content
+
+    switch (apiStatus) {
+      case 'success':
+        content = this.renderProductsList()
+        break
+      case 'failed':
+        content = this.renderFailureView()
+        break
+      default:
+        content = this.renderLoader()
+        break
+    }
 
     return (
       <div className="all-products-section">
         {/* TODO: Update the below element */}
-
-        {isLoading ? this.renderLoader() : this.renderProductsList()}
+        {content}
+        {/* isLoading ? this.renderLoader() : this.renderProductsList() */}
       </div>
     )
   }
